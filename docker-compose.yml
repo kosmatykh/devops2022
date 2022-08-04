@@ -1,0 +1,19 @@
+---
+version: '3'
+services:
+  web:
+    image: tomcat:latest
+    ports:
+      - "8080:8080"
+    volumes:
+      - /var/boxfuse/hello-1.0.war:/usr/local/tomcat/webapps/
+    volumes_from:
+      - java
+    depends_on:
+      - java
+  java:
+    build:
+      context: .
+      dockerfile: Dockerfile_boxfuse
+    volumes:
+      - /var/boxfuse/:/var/boxfuse/
