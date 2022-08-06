@@ -1,0 +1,17 @@
+---
+version: '3'
+services:
+  web:
+    image: tomcat:jre8-alpine
+    ports:
+      - "8080:8080"
+    volumes:
+      - boxfusev:/usr/local/tomcat/webapps
+    depends_on:
+      - building
+  building:
+    build: boxfuse/
+    volumes:
+      - boxfusev:/usr/share
+volumes:
+  boxfusev:
