@@ -1,0 +1,54 @@
+---
+- name: Create Docker image boxfuseapp
+  hosts: build
+  become: yes
+
+  tasks:
+  - name: Ensure docker package is present
+    apt:
+      name: docker
+      state: present
+
+  - name: Ensure git package is present
+    apt:
+      name: git
+      state: present
+
+  - name: Clone repo with Dockerfile
+    git:
+      repo: 'https://github.com/kosmatykh/devops2022.git'
+      dest: /boxfuse
+      clone: yes
+      force: yes
+
+  - name: Ensure Dockerfile is present
+    apt:
+      name: docker
+      state: present
+
+
+  - name: Ensure Dockerfile is present
+    apt:
+      name: docker
+      state: present
+
+  - name: Ensure python-pip is present
+    apt:
+      name: python-pip
+      state: present
+
+  - name: Ensure docker-py is present
+    pip:
+      name: docker-py
+
+  - name: Build image with buildargs
+    docker_image:
+      path: /boxfuse/Boxfuse/
+      name: boxfuseapp
+      buildargs:
+        log_volume: /var/log/boxfuseapp
+        listen_port: 8080
+      repository: kosmatykh/boxfuseapp
+      tag: 1.0
+      push: yes
+
