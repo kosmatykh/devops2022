@@ -41,14 +41,10 @@
     pip:
       name: docker-py
 
-  - name: Build image with buildargs
+  - name: Build image boxfuseapp
     docker_image:
       path: /boxfuse/Boxfuse/
       name: boxfuseapp
-      buildargs:
-        log_volume: /var/log/boxfuseapp
-        listen_port: 8080
       repository: kosmatykh/boxfuseapp
-      tag: 1.0
       push: yes
 
