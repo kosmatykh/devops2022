@@ -1,0 +1,32 @@
+---
+# tasks file for build
+- name: Ensure java package is present
+  apt:
+    update_cache: yes
+    name: default-jdk
+    state: present
+
+- name: Ensure maven package is present
+  apt:
+    name: maven
+    state: present
+
+- name: Ensure git package is present
+  apt:
+    name: git
+    state: present
+
+- name: Ensure git repository clone is present
+  git:
+    repo: "{{ repo }}"
+    dest: "{{ dest_folder }}"
+    clone: yes
+    force: yes
+
+- name: templating pom.xml
+  template:
+    src: pom.j2
+    dest: "{{ dest_folder }}/pom.xml"
+
+- name: Ensure artifact is present
+  command: mvn package -f "{{ dest_folder  }}/pom.xml"

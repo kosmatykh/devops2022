@@ -1,0 +1,24 @@
+---
+- name: Install nginx
+  hosts: build
+  become: yes
+
+  tasks:
+  - name: Ensure nginx package is present
+    apt:
+      name: nginx
+      state: present
+
+  - name: dfjd
+    lineinfile:
+      path: /var/www/html/index.html
+      regexp: 'Hello,Nginx!'
+      line: '<p><script> document.write(new Date().toLocaleDateString()); </script></p>'
+
+
+  - name: Ensure ngunx service is started
+    service:
+      name: nginx
+      state: started
+
+

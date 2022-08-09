@@ -1,5 +1,5 @@
 ---
-- name: Install tomcat
+- name: Install java
   hosts: build
   become: yes
 
