@@ -13,8 +13,3 @@
   roles:
     - prod
 
-#- name: Transfer file from build to prod
-#  synchronize:
-#    src: /boxfuse/target/hello-1.0.war
-#    dest: /var/lib/tomcat9/webapps/
-#  delegate_to: 51.250.101.115
