@@ -1,0 +1,16 @@
+---
+- name: build configuration
+  hosts: build
+  become: yes
+
+  roles:
+    - common
+    - buildDockerImage
+
+- name: prod configuration
+  hosts: prod
+  become: yes
+
+  roles:
+    - common
+    - runDockerContainer

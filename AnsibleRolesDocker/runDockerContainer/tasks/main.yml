@@ -1,0 +1,23 @@
+---
+# tasks file for runDockerContainer
+
+- name: Log into DockerHub
+  docker_login:
+    username: "{{ user }}"
+    password: "{{ passwd }}"
+
+- name: Pull an image boxfuseapp
+  docker_image:
+    name: "{{ dockerhub_repo }}"
+    source: pull
+
+- name: Create a boxfuse container
+  docker_container:
+    name: boxfuse_container
+    image: "{{ dockerhub_repo }}"
+    ports: 8080:8080
+    detach: yes
+
+- name: Log out of DockerHub
+  docker_login:
+    state: absent

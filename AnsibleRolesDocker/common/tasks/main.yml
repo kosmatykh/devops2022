@@ -1,0 +1,11 @@
+---
+# tasks file for common
+- name: Install packages for Docker API
+  apt:
+    name: ['python3-pip', 'docker.io']
+    state: present
+
+- name: Install docker plugin for python
+  pip:
+    name: docker
+    executable: pip3

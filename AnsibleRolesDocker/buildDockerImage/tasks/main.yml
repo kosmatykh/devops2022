@@ -1,0 +1,31 @@
+---
+# tasks file for buildDockerImage
+- name: Ensure git package is present
+  apt:
+    name: git
+    state: present
+
+- name: Clone repo with Dockerfile
+  git:
+    repo: "{{ github_repo }}"
+    dest: "{{ dest_folder }}"
+    clone: yes
+    force: yes
+
+- name: Log into DockerHub
+  docker_login:
+    username: "{{ user }}"
+    password: "{{ passwd }}"
+
+- name: Build image boxfuseapp
+  docker_image:
+    build:
+      path: "{{ dest_folder }}/Boxfuse/"
+    source: build
+    name: "{{ image_name }}"
+    repository: "{{ dockerhub_repo }}"
+    push: yes
+
+- name: Log out of DockerHub
+  docker_login:
+    state: absent

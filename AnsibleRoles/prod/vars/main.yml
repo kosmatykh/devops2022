@@ -2,4 +2,4 @@
 # vars file for prod
 src_folder: /boxfuse/target/hello-1.0.war
 dest_folder: /var/lib/tomcat9/webapps/
-build_ip_address: 51.250.101.115
+build_ip_address: 158.160.3.210
