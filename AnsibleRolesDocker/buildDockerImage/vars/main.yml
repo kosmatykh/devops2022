@@ -1,8 +1,5 @@
 ---
 # vars file for buildDockerImage
-#passwd: dckr_pat_93IhEiuT6P5dpb2N7j0dcEuLvMc
-#user: kosmatykh
 github_repo: https://github.com/kosmatykh/devops2022.git
 dest_folder: /boxfuse
-#dockerhub_repo: kosmatykh/boxfuseapp
 image_name: boxfuseapp

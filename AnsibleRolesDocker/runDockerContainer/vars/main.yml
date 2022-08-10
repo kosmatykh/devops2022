@@ -1,5 +1,2 @@
 ---
 # vars file for runDockerContainer
-#passwd: dckr_pat_93IhEiuT6P5dpb2N7j0dcEuLvMc
-#user: kosmatykh
-#dockerhub_repo: kosmatykh/boxfuseapp
