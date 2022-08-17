@@ -1,0 +1,46 @@
+pipeline {
+  environment {
+     NEXUS_CREDS = credentials('91c90bcf-32e5-4766-8db0-ad32cb27ca8c')
+  }
+  agent {
+    docker {
+      image '158.160.0.170:8123/jenkins-agent:1.0.1'
+      registryCredentialsId ${NEXUS_CREDS}
+    }
+
+  stages {
+
+    stage('Copy source with configs') {
+      steps {
+        git(url: 'https://github.com/boxfuse/boxfuse-sample-java-war-hello.git')
+        sh 'ssh-keyscan -H 158.160.4.52 >> /root/.ssh/known_hosts'
+        sh 'scp root@158.160.4.52:/root/build/pom.xml boxfuse-sample-java-war-hello/pom.xml'
+
+      }
+    }
+
+    stage('Build war') {
+      steps {
+        sh 'mvn package -f boxfuse-sample-java-war-hello/pom.xml'
+      }
+    }
+
+    stage('Make docker image') {
+      steps {
+        sh 'scp root@158.160.4.52:/root/build/Dockerfile . && docker build -t boxfuseapp:1.0.0 .'
+        sh '''docker tag boxfuseapp:1.0.0 158.160.0.170:8123/boxfuseapp:1.0.0  && docker push -u ${NEXUS_CREDS_USR} -p${NEXUS_CREDS_PSW} 158.160.0.170:8123/boxfuseapp:1.0.0'''
+
+      }
+    }
+
+    stage('Run docker on prod') {
+      steps {
+        sh 'ssh-keyscan -H 158.160.10.108 >> /root/.ssh/known_hosts'
+        sh '''ssh root@158.160.10.108 << EOF
+	docker pull -u ${NEXUS_CREDS_USR} -p${NEXUS_CREDS_PSW} 158.160.0.170:8123/boxfuseapp:1.0.0
+	docker run -d boxfuseapp:1.0.0
+EOF'''
+      }
+    }
+  }
+ }
