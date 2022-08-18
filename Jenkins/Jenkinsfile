@@ -2,43 +2,52 @@ pipeline {
   environment {
      NEXUS_CREDS = credentials('91c90bcf-32e5-4766-8db0-ad32cb27ca8c')
   }
+
   agent {
     docker {
-      image '158.160.0.170:8123/jenkins-agent:1.0.1'
-      registryCredentialsId ${NEXUS_CREDS}
+      image 'jenkins-agent:1.0.1'
+      args '-u root --privileged -v /var/run/docker.sock:/var/run/docker.sock'
+      registryUrl 'http://158.160.0.167:8123'
+      registryCredentialsId '91c90bcf-32e5-4766-8db0-ad32cb27ca8c'
     }
-
+  }
   stages {
 
     stage('Copy source with configs') {
       steps {
         git(url: 'https://github.com/boxfuse/boxfuse-sample-java-war-hello.git')
-        sh 'ssh-keyscan -H 158.160.4.52 >> /root/.ssh/known_hosts'
-        sh 'scp root@158.160.4.52:/root/build/pom.xml boxfuse-sample-java-war-hello/pom.xml'
+        sh 'ls /root/'
+        sh 'ls /root/.ssh'
+        sh 'ssh-keyscan -H 158.160.2.180 >> /root/.ssh/known_hosts'
+        sh 'scp root@158.160.2.180:/root/build/pom.xml pom.xml'
 
       }
     }
 
     stage('Build war') {
       steps {
-        sh 'mvn package -f boxfuse-sample-java-war-hello/pom.xml'
+        sh 'mvn package'
       }
     }
 
     stage('Make docker image') {
       steps {
-        sh 'scp root@158.160.4.52:/root/build/Dockerfile . && docker build -t boxfuseapp:1.0.0 .'
-        sh '''docker tag boxfuseapp:1.0.0 158.160.0.170:8123/boxfuseapp:1.0.0  && docker push -u ${NEXUS_CREDS_USR} -p${NEXUS_CREDS_PSW} 158.160.0.170:8123/boxfuseapp:1.0.0'''
+        sh 'service docker start'
+        sh 'ls -la /var/run/docker.sock'
+        sh 'scp root@158.160.2.180:/root/build/Dockerfile . && docker build -t boxfuseapp:1.0.0 .'
+        sh 'echo {"insecure-registries": ["158.160.0.167:8123"]} >  /etc/docker/daemon.json'
+        sh 'docker login -u="${NEXUS_CREDS_USR}" -p="${NEXUS_CREDS_PSW}" 158.160.0.167:8123'
+        sh '''docker tag boxfuseapp:1.0.0 158.160.0.167:8123/boxfuseapp:1.0.0  && docker push 158.160.0.167:8123/boxfuseapp:1.0.0'''
 
       }
     }
 
     stage('Run docker on prod') {
       steps {
-        sh 'ssh-keyscan -H 158.160.10.108 >> /root/.ssh/known_hosts'
-        sh '''ssh root@158.160.10.108 << EOF
-	docker pull -u ${NEXUS_CREDS_USR} -p${NEXUS_CREDS_PSW} 158.160.0.170:8123/boxfuseapp:1.0.0
-	docker run -d boxfuseapp:1.0.0
+        sh 'ssh-keyscan -H 158.160.3.121 >> /root/.ssh/known_hosts'
+        sh '''ssh root@158.160.3.121 << EOF
+	docker pull  158.160.0.167:8123/boxfuseapp:1.0.0
+	docker run -d -p 8085:8080 158.160.0.167:8123/boxfuseapp:1.0.0
 EOF'''
       }
     }

@@ -1,0 +1,6 @@
+FROM openjdk:8
+
+RUN apt update
+RUN apt install -y  maven docker.io git
+RUN apt install -y openssh-client
+COPY id_rsa /tmp/id_rsa
