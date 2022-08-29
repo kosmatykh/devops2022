@@ -1,0 +1,36 @@
+---
+version: '3'
+services:
+  auth-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - /opt/authservice:/opt/authservice/App42PaaS-Java-MySQL-Sample
+    environment:
+      DB_USERNAME: root
+      DB_PORT: 3306
+      DB_PASS: 12345678
+      DB_IP: mysql
+      DB_DBNAME: authservice
+    depends_on:
+      - mysql
+
+  tomcat:
+    image: tomcat:latest
+    ports:
+      - "8383:8080"
+    volumes:
+      - /opt/authservice:/usr/local/tomcat/webapps/
+    depends_on:
+      - auth-service
+
+  mysql:
+    image: mysql:5
+    environment:
+      MYSQL_ROOT_PASSWORD: 12345678
+      MYSQL_DATABASE: authservice
+    volumes:
+      - /var/lib/mysql:/var/lib/mysql
+
+
