@@ -1,0 +1,7 @@
+users:
+  - name: kosmatykh
+    groups: sudo
+    shell: /bin/bash
+    sudo: ['ALL=(ALL) NOPASSWD:ALL']
+    ssh_authorized_keys:
+      - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIB5tlrtl9gKhOI3xt27IPI1tY3BIZvGe8QTp5Hf0b2C5 kosmatykh
